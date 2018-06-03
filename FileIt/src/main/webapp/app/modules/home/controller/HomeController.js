@@ -141,17 +141,32 @@ fileItApp
 								// get the files
 								var files = element.files;
 								for (var i = 0; i < files.length; i++) {
-									$scope.convertImage(files);
-									$scope.showSubmitButton = true;
-									$scope.ImageProperty.name = files[i].name;
-									$scope.ImageProperty.path = $scope.binderName
-											+ "/Images/";
-									$scope.ImageProperty.type = files[i].type;
+									var fileFound = false;
+									for(var j = 0; j < $scope.fileList.length; j++){
+										if($scope.fileList[j].name == files[i].name){
+											fileFound = true;
+										}
+									}
+									if(!fileFound){
+										$scope.convertImage(files);
+										$scope.showSubmitButton = true;
+										$scope.ImageProperty.name = files[i].name;
+										$scope.ImageProperty.path = $scope.binderName
+												+ "/Images/";
+										$scope.ImageProperty.type = files[i].type;
 
-									$scope.fileList.push($scope.ImageProperty);
-									$scope.ImageProperty = {};
-									$scope.$apply();
-
+										$scope.fileList.push($scope.ImageProperty);
+										$scope.ImageProperty = {};
+										$scope.$apply();
+									}
+								}
+								element.files = null;
+							}
+							
+							$scope.deleteFile = function(index){
+								$scope.fileList.splice(index,1);
+								if($scope.fileList.length < 1){
+									$scope.showSubmitButton = false;
 								}
 							}
 							$scope.showSubmitButton = true;
@@ -170,6 +185,10 @@ fileItApp
 								$scope.executionName = '';
 								$scope.files = [];
 								$scope.errorMessage = '';
+								$scope.binderName = '';
+								$scope.classification = '';
+								$scope.fileList = [];
+								$scope.uploadFIleValue = false;
 							};
 
 							$scope.goToStep = function(index) {
@@ -177,7 +196,16 @@ fileItApp
 									$scope.selection = $scope.steps[index];
 								}
 							};
-
+							
+							$scope.enableNext = function(){
+								if($scope.binderName == undefined || ($scope.classification == undefined && $scope.getCurrentStepIndex() == 2) || !$scope.uploadFIleValue){
+									return false;
+								}else{
+									return true;
+								}
+								
+							}
+							
 							$scope.hasNextStep = function() {
 								var stepIndex = $scope.getCurrentStepIndex();
 								var nextStep = stepIndex + 1;
@@ -200,7 +228,6 @@ fileItApp
 								}
 
 							};
-
 							$scope.showButton = function(uploadFIleValue) {
 								if (uploadFIleValue === true) {
 									$scope.showSubmitButton = false;
@@ -250,7 +277,7 @@ fileItApp
 
 							$scope.dropText = 'Drag file here ...'
 
-							$scope.setFiles = function(element) {
+							/*$scope.setFiles = function(element) {
 								$scope
 										.$apply(function($scope) {
 											$scope.files = []
@@ -260,7 +287,7 @@ fileItApp
 											}
 											$scope.progressVisible = false
 										});
-							};
+							};*/
 
 							$scope.decrementStep = function() {
 								if ($scope.hasPreviousStep()) {

@@ -74,11 +74,20 @@ fileItApp
 								$scope.getData();
 							};
 							$scope.getImage();
-
-							$scope.remove = function(scope) {
-								scope.remove();
+							
+							var bookScope;
+							
+							$scope.removeFile = function(scope) {
+								$rootScope.$broadcast('showConfirmModal');
+								bookScope = scope;
 							};
-
+							
+							
+							$scope.$on('confirmAgreed', function(){
+								bookScope.remove(this);
+								bookScope = null; 
+							});
+							
 							$scope.closeModal = function() {
 								$scope.fileList = [];
 							}
@@ -173,6 +182,7 @@ fileItApp
 							}
 
 							$scope.removeBook = function() {
+								
 								$scope.deletebook(BINDER_NAME.name);
 							}
 
